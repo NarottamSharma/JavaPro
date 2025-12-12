@@ -9,6 +9,7 @@ public class SetDemo {
         roles.add("admin");
         roles.add("user");
         roles.add("user");
+
         for(String role:roles){
             IO.println(role);
         }

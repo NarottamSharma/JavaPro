@@ -1,95 +1,88 @@
 package String;
 
+public class StringMasterClass {
 
-public class SpeedTest {
+    public static void main(String[] args) {
+        // Part 1: Run the Concept Demonstrations
+        runConceptChecks();
 
-        int iterations = 100000;
+        // Part 2: Run the Speed Test
+        runSpeedTest();
+    }
 
-        // --- TEST 1: Using String (Bad for loops) ---
-        long startTime = System.currentTimeMillis();
-        String s = "";
-        for(int i = 0; i < iterations; i++) {
-            s = s + "a"; // Creates a NEW object 100,000 times!
-        }
-        long endTime = System.currentTimeMillis();
-        System.out.println("String time: " + (endTime - startTime) + "ms");
+    // ==========================================
+    // METHOD 1: CONCEPTS (SCP, Heap, Immutability)
+    // ==========================================
+    public static void runConceptChecks() {
+        System.out.println("=== PART 1: CONCEPT CHECKS ===");
 
+        // --- 1. Memory Locations (SCP vs Heap) ---
+        System.out.println("\n--- 1. Memory Locations ---");
 
-        // --- TEST 2: Using StringBuilder (Good for loops) ---
-        startTime = System.currentTimeMillis();
-        StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < iterations; i++) {
-            sb.append("a"); // Modifies the SAME object 100,000 times
-        }
-        endTime = System.currentTimeMillis();
-        System.out.println("StringBuilder time: " + (endTime - startTime) + "ms");
-
-}
-
-public class Main {
-    static void main(String[] args) {
-
-        // ==========================================
-        // 1. STRING CONSTANT POOL (SCP) vs HEAP
-        // ==========================================
-        System.out.println("--- 1. Memory Locations ---");
-
-        // Case A: Literals (Stored in SCP)
-        // Java sees "Hello" is already in SCP, so s1 and s2 point to the SAME spot.
+        // Case A: Literals (Stored in String Constant Pool)
         String s1 = "Hello";
         String s2 = "Hello";
 
-        // Case B: 'new' Keyword (Stored in Heap)
-        // Forces a NEW object in Heap, even though content is same.
-        String s3 = "Hello";
+        // Case B: 'new' Keyword (Stored in Main Heap)
+        // FIX: Must use 'new String' to force a different memory address
+        String s3 = new String("Hello");
 
-        System.out.println("s1 == s2? " + (s1 == s2)); // true (Same memory)
-        System.out.println("s1 == s3? " + (s1 == s3)); // false (Different memory)
+        System.out.println("s1 == s2? " + (s1 == s2)); // true (Same object in SCP)
+        System.out.println("s1 == s3? " + (s1 == s3)); // false (Different object in Heap)
 
 
-        // ==========================================
-        // 2. PROVING IMMUTABILITY (String)
-        // ==========================================
+        // --- 2. Proving Immutability (String) ---
         System.out.println("\n--- 2. Immutability of String ---");
-
         String str = "Java";
-        // Let's check the memory address BEFORE change
-        System.out.println("Original Address: " + System.identityHashCode(str));
+        System.out.println("Original String Address: " + System.identityHashCode(str));
 
-        str = str + " Programming";
-        // We 'changed' the string, but look at the address now:
-        System.out.println("New Address:      " + System.identityHashCode(str));
-
-        // RESULT: The addresses are DIFFERENT.
-        // Java didn't change "Java"; it created a whole new object "Java Programming"
-        // and threw the old one away. This is why String is SLOW for loops.
+        str = str + " Programming"; // Creates NEW object
+        System.out.println("New String Address:      " + System.identityHashCode(str));
+        // Result: Addresses are DIFFERENT
 
 
-        // ==========================================
-        // 3. PROVING MUTABILITY (StringBuffer/Builder)
-        // ==========================================
+        // --- 3. Proving Mutability (StringBuffer) ---
         System.out.println("\n--- 3. Mutability of StringBuffer ---");
-
         StringBuffer sb = new StringBuffer("Java");
-        // Check memory address BEFORE change
-        System.out.println("Original Address: " + System.identityHashCode(sb));
+        System.out.println("Original Buffer Address: " + System.identityHashCode(sb));
 
-        sb.append(" Programming");
-        // Check memory address AFTER change
-        System.out.println("New Address:      " + System.identityHashCode(sb));
-
-        // RESULT: The addresses are the SAME.
-        // Java modified the original object directly. Much faster.
+        sb.append(" Programming"); // Modifies SAME object
+        System.out.println("New Buffer Address:      " + System.identityHashCode(sb));
+        // Result: Addresses are SAME
 
 
-        // ==========================================
-        // 4. STRING BUILDER (The Fast One)
-        // ==========================================
-        // Exactly like StringBuffer, but not 'Synchronized' (Not thread-safe).
-        // Use this 90% of the time in non-threaded apps.
+        // --- 4. StringBuilder Utility ---
+        System.out.println("\n--- 4. StringBuilder Usage ---");
         StringBuilder sBuilder = new StringBuilder("Hello");
-        sBuilder.reverse(); // Easy utility methods
-        System.out.println("\n--- 4. StringBuilder Output ---");
+        sBuilder.reverse();
         System.out.println("Reversed: " + sBuilder);
+    }
+
+    // ==========================================
+    // METHOD 2: SPEED TEST (String vs StringBuilder)
+    // ==========================================
+    public static void runSpeedTest() {
+        System.out.println("\n\n=== PART 2: SPEED TEST ===");
+
+        int iterations = 100000;
+
+        // --- TEST A: Using String (Slow) ---
+        long startTime = System.currentTimeMillis();
+        String s = "";
+        for(int i = 0; i < iterations; i++) {
+            s = s + "a"; // Creates 100,000 new objects!
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println("String Time:        " + (endTime - startTime) + "ms");
+
+
+        // --- TEST B: Using StringBuilder (Fast) ---
+        startTime = System.currentTimeMillis();
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < iterations; i++) {
+            sb.append("a"); // Updates 1 object 100,000 times
+        }
+        endTime = System.currentTimeMillis();
+        System.out.println("StringBuilder Time: " + (endTime - startTime) + "ms");
     }
 }
